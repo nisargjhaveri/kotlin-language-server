@@ -20,9 +20,9 @@ import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.completedFuture
 
-class KotlinLanguageServer : LanguageServer, LanguageClientAware, Closeable {
+class KotlinLanguageServer(compilerPath: String?) : LanguageServer, LanguageClientAware, Closeable {
     val config = Configuration()
-    val classPath = CompilerClassPath(config.compiler)
+    val classPath = CompilerClassPath(config.compiler, compilerPath)
 
     private val tempDirectory = TemporaryDirectory()
     private val uriContentProvider = URIContentProvider(ClassContentProvider(config.externalSources, classPath, tempDirectory, CompositeSourceArchiveProvider(JdkSourceArchiveProvider(classPath), ClassPathSourceArchiveProvider(classPath))))

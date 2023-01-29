@@ -30,7 +30,7 @@ private class FileToEdit {
         @JvmStatic @BeforeClass fun setup() {
             LOG.connectStdioBackend()
             outputDirectory = Files.createTempDirectory("klsBuildOutput").toFile()
-            compiler = Compiler(setOf(), setOf(), outputDirectory = outputDirectory)
+            compiler = Compiler(null, setOf(), setOf(), outputDirectory = outputDirectory)
         }
 
         @JvmStatic @AfterClass

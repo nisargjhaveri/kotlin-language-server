@@ -80,6 +80,7 @@ private val GRADLE_DSL_DEPENDENCY_PATTERN = Regex("^gradle-(?:kotlin-dsl|core).*
  * files and expressions.
  */
 private class CompilationEnvironment(
+    compilerPath: String?,
     javaSourcePath: Set<Path>,
     classPath: Set<Path>
 ) : Closeable {
@@ -110,6 +111,10 @@ private class CompilationEnvironment(
                 put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
                 add(ComponentRegistrar.PLUGIN_COMPONENT_REGISTRARS, ScriptingCompilerConfigurationComponentRegistrar())
                 put(JVMConfigurationKeys.USE_PSI_CLASS_FILES_READING, true)
+
+                compilerPath?.let {
+                    put(CLIConfigurationKeys.INTELLIJ_PLUGIN_ROOT, it)
+                }
 
                 addJvmClasspathRoots(classPath.map { it.toFile() })
                 addJavaSourceRoots(javaSourcePath.map { it.toFile() })
@@ -437,12 +442,12 @@ enum class CompilationKind {
  * Incrementally compiles files and expressions.
  * The basic strategy for compiling one file at-a-time is outlined in OneFilePerformance.
  */
-class Compiler(javaSourcePath: Set<Path>, classPath: Set<Path>, buildScriptClassPath: Set<Path> = emptySet(), private val outputDirectory: File) : Closeable {
+class Compiler(compilerPath: String?, javaSourcePath: Set<Path>, classPath: Set<Path>, buildScriptClassPath: Set<Path> = emptySet(), private val outputDirectory: File) : Closeable {
     private var closed = false
     private val localFileSystem: VirtualFileSystem
 
-    private val defaultCompileEnvironment = CompilationEnvironment(javaSourcePath, classPath)
-    private val buildScriptCompileEnvironment = buildScriptClassPath.takeIf { it.isNotEmpty() }?.let { CompilationEnvironment(emptySet(), it) }
+    private val defaultCompileEnvironment = CompilationEnvironment(compilerPath, javaSourcePath, classPath)
+    private val buildScriptCompileEnvironment = buildScriptClassPath.takeIf { it.isNotEmpty() }?.let { CompilationEnvironment(compilerPath, emptySet(), it) }
     private val compileLock = ReentrantLock() // TODO: Lock at file-level
 
     companion object {

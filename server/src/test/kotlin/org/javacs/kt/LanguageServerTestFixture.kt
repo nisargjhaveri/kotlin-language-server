@@ -19,7 +19,7 @@ abstract class LanguageServerTestFixture(relativeWorkspaceRoot: String) : Langua
     }
 
     private fun createLanguageServer(): KotlinLanguageServer {
-        val languageServer = KotlinLanguageServer()
+        val languageServer = KotlinLanguageServer(null)
         val init = InitializeParams().apply {
             capabilities = ClientCapabilities().apply {
                 textDocument = TextDocumentClientCapabilities().apply {

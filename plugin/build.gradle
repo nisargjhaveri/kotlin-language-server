@@ -1,0 +1,55 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'maven-publish'
+    id "biz.aQute.bnd.builder" version "6.4.0"
+}
+
+version = projectVersion
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(javaVersion)
+    }
+}
+
+jar {
+  bundle {
+    bndfile = file("bnd.bnd")
+  }
+}
+
+task cleanDeps(type: Delete) {
+    delete("${project.buildDir}/deps")
+}
+
+task copyDeps(type: Copy) {
+    from(configurations.runtimeClasspath)
+    into("${project.buildDir}/deps")
+}
+
+repositories {
+    maven { url uri("$projectDir/../server/lib") }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://repo.eclipse.org/content/repositories/jdtls-releases/' }
+}
+
+dependencies {
+    implementation(project(':server')) {
+        // exclude group:"org.jetbrains.kotlin"
+        // exclude group:"org.eclipse.lsp4j"
+        exclude group:"org.slf4j"
+    }
+    implementation(project(':shared')) {
+        // exclude group:"org.jetbrains.kotlin"
+        // exclude group:"org.eclipse.lsp4j"
+        exclude group:"org.slf4j"
+    }
+
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+
+    compileOnly('org.eclipse.platform:org.eclipse.core.runtime:3.26.100')
+    compileOnly('org.eclipse.jdt.ls:org.eclipse.jdt.ls.core:1.18.0.20221201171036')
+
+    compileOnly("org.eclipse.lsp4j:org.eclipse.lsp4j:$lsp4jVersion")
+    compileOnly("org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:$lsp4jVersion")
+}

@@ -14,7 +14,7 @@ import java.nio.file.Path
  * Manages the class path (compiled JARs, etc), the Java source path
  * and the compiler. Note that Kotlin sources are stored in SourcePath.
  */
-class CompilerClassPath(private val config: CompilerConfiguration) : Closeable {
+class CompilerClassPath(private val config: CompilerConfiguration, private val compilerPath: String?) : Closeable {
     val workspaceRoots = mutableSetOf<Path>()
 
     private val javaSourcePath = mutableSetOf<Path>()
@@ -23,7 +23,7 @@ class CompilerClassPath(private val config: CompilerConfiguration) : Closeable {
     val outputDirectory: File = Files.createTempDirectory("klsBuildOutput").toFile()
     val javaHome: String? = System.getProperty("java.home", null)
 
-    var compiler = Compiler(javaSourcePath, classPath.map { it.compiledJar }.toSet(), buildScriptClassPath, outputDirectory)
+    var compiler = Compiler(compilerPath, javaSourcePath, classPath.map { it.compiledJar }.toSet(), buildScriptClassPath, outputDirectory)
         private set
 
     private val async = AsyncExecutor()
@@ -71,7 +71,7 @@ class CompilerClassPath(private val config: CompilerConfiguration) : Closeable {
         if (refreshCompiler) {
             LOG.info("Reinstantiating compiler")
             compiler.close()
-            compiler = Compiler(javaSourcePath, classPath.map { it.compiledJar }.toSet(), buildScriptClassPath, outputDirectory)
+            compiler = Compiler(compilerPath, javaSourcePath, classPath.map { it.compiledJar }.toSet(), buildScriptClassPath, outputDirectory)
             updateCompilerConfiguration()
         }
 

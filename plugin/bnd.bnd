@@ -1,0 +1,23 @@
+-consumer-policy =
+-includeresource: libs=build/deps;lib:=true,plugin.xml
+-fixupmessages: '^Classes found in the wrong directory:';restrict:=error;is:=warning
+
+Bundle-Name = kotlin-jdt-ls-extension
+Bundle-SymbolicName = org.javacs.kt.jdt.ls.extension;singleton:=true
+Export-Package: org.javacs.kt.jdt.ls.extension
+Bundle-Activator: org.javacs.kt.jdt.ls.extension.KotlinPlugin
+Require-Bundle: \
+    com.microsoft.java.debug.plugin
+Import-Package: \
+    !android.os, \
+    !com.google.appengine.*, \
+    !com.google.apphosting.*, \
+    !com.ibm.icu.text, \
+    !com.sun.tools.javac.*, \
+    !jdk.internal.misc, \
+    !org.apache.lucene.*, \
+    !org.codehaus.groovy.*, \
+    !org.jetbrains.kotlin.js.engine, \
+    !org.locationtech.*, \
+    !sun.nio.ch, \
+    *
